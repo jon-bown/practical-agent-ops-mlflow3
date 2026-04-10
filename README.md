@@ -1,6 +1,7 @@
 # Practical Agent Ops: From PoC to Prod with MLflow 3.0
 
-Resources related to my upcoming talk at the Open Data Science Conference (ODSC AI) East 2026 in Boston on April 28th (schedule is still tentative)
+Resources related to my upcoming talk at the Open Data Science Conference (ODSC AI) East 2026 in Boston on April 28th, 3:30 - 5:30 PM EDT, Hynes Convention Center
+
 
 Getting Started [Blog Post](https://opendatascience.com/practical-agentops-getting-started-with-mlflow-3/?utm_campaign=Learning%20Posts&utm_content=371714959&utm_medium=social&utm_source=linkedin&hss_channel=lcp-9358547)
 
