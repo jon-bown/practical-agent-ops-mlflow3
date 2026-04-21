@@ -3,3 +3,6 @@
 *.claude
 *.python-version
 *.db
+*.toml
+*.venv
+uv.lock
