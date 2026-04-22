@@ -6,3 +6,4 @@ mlflow.db
 pyproject.toml
 .venv
 uv.lock
+mlartifacts
