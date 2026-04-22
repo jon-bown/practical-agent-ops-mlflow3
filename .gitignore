@@ -1,8 +1,8 @@
-*.env
-*.agents
-*.claude
-*.python-version
-*.db
-*.toml
-*.venv
+.env
+.agents
+.claude
+.python-version
+mlflow.db
+pyproject.toml
+.venv
 uv.lock
