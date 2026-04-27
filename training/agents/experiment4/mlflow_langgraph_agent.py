@@ -1,6 +1,8 @@
 # agent.py
 import ast
 import os
+import time
+import uuid
 from dataclasses import dataclass, field
 from typing import Callable, Sequence
 
@@ -9,28 +11,32 @@ from langchain.agents import create_agent
 from langchain_core.tools import BaseTool
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+import math
 import mlflow
 from mlflow.entities import SpanType
-import math
+from mlflow.pyfunc import ChatModel
+from mlflow.types.llm import ChatChoice, ChatCompletionResponse, ChatMessage, ChatParams
 from openai import OpenAI
 
 openai_client = OpenAI(
     api_key=os.environ["GEMINI_API_KEY"],
-    base_url=os.environ["GEMINI_OPENAI_BASE_URL"],
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
 )
 EMBEDDING_MODEL = "gemini-embedding-001"
+
+mlflow.autolog()
 
 @dataclass
 class AgentConfig:
     model: str = "gemini-2.5-flash-lite"
-    temperature: float = 0.0
+    temperature: float = 0.2
     prompt_uri: str = "prompts:/mlflow-agent-system@prod"
     autolog: bool = True
 
 
-class MLflowDocsAgent:
+class MLflowDocsAgent(ChatModel):
     """
-    Wrapper around a LangChain agent that loads its system prompt from the
+    Wrapper around a LangChain create_agent that loads its system prompt from the
     MLflow Prompt Registry and exposes a stable predict() method for
     mlflow.genai.evaluate().
 
@@ -95,8 +101,13 @@ class MLflowDocsAgent:
         # Format for the LLM — MLflow autocaptures this as the retriever output
         return "\n\n".join(c["page_content"] for c in chunks)
 
-    @mlflow.trace(span_type=SpanType.AGENT, name="MLflowDocsAgent")
-    def predict(self, question: str) -> str:
+    @mlflow.trace(span_type=SpanType.AGENT, name="MLflowAgent")
+    def predict(
+        self,
+        context,
+        messages: list[ChatMessage],
+        params: ChatParams,
+    ) -> str:
         """
         Stable invocation surface. Compatible with mlflow.genai.evaluate's
         predict_fn(inputs: dict) signature when called as agent.predict(**inputs).
@@ -105,15 +116,31 @@ class MLflowDocsAgent:
             self._build()
 
         # Optional retrieval step — empty string if no retrievers registered
-        context = self._retrieve(question)
+        query = messages[-1].content if messages else ""
+        context = self._retrieve(query)
         user_message = (
-            f"Context:\n{context}\n\nQuestion: {question}" if context else question
+            f"Context:\n{context}\n\nQuestion: {query}" if context else query
         )
 
         result = self._agent.invoke(
             {"messages": [{"role": "user", "content": user_message}]}
         )
-        return result["messages"][-1].content
+        # create_agent returns a LangGraph compiled graph; .invoke() gives back
+        # {"messages": [BaseMessage, ...]}.  The last message is the final answer.
+        output_text = result["messages"][-1].content
+        return ChatCompletionResponse(
+            id=f"chatcmpl-{uuid.uuid4().hex[:8]}",
+            object="chat.completion",
+            created=int(time.time()),
+            model=self.config.model,
+            choices=[
+                ChatChoice(
+                    index=0,
+                    message=ChatMessage(role="assistant", content=output_text),
+                    finish_reason="stop",
+                )
+            ],
+        )
 
 
 
@@ -365,4 +392,4 @@ mlflow_docs_retriever = SemanticRetriever(
 agent = MLflowDocsAgent()
 agent.add_tools([get_mlflow_version_pypi, get_release_notes_from_github])
 agent.add_retriever(mlflow_docs_retriever)
-#mlflow.models.set_model(agent)
+mlflow.models.set_model(agent)
