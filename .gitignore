@@ -7,3 +7,5 @@ pyproject.toml
 .venv
 uv.lock
 mlartifacts
+training/scratch
+__pycache__
