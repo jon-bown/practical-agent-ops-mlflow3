@@ -1,5 +1,11 @@
-*.env
-*.agents
-*.claude
-*.python-version
-*.db
+.env
+.agents
+.claude
+.python-version
+mlflow.db
+pyproject.toml
+.venv
+uv.lock
+mlartifacts
+training/scratch
+__pycache__
