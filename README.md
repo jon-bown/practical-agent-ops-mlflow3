@@ -21,6 +21,10 @@ We will be setting up localhost using option 2 shown here
 2. Jupyter + Python extensions installed within VS Code
 3. LLM API Key (Billing enabled preferred)
 
+We'll be using Google AI Studio/Gemini Account for the training. Create an account here:
+
+[Google AI Studio](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://aistudio.google.com/&ved=2ahUKEwip8amQ2ZCUAxUdhSsGHeSzAWwQFnoECAsQAQ&usg=AOvVaw2ado6WVRi8CYsaHcreSChK)
+
 # Quick Start
 
 1. Clone the repo
