@@ -38,19 +38,27 @@ cd practical-agent-ops-mlflow3
 touch .env
 ```
 
+Or
+
+```bash
+cp example.env .env
+```
+
 Open `.env` and fill in the following variables:
 
 ```bash
+# GEMINI API
 GEMINI_API_KEY=your-gemini-billing-enabled-api-key
 GEMINI_API_KEY_FREE=your-gemini-free-tier-api-key
+GEMINI_OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+# OPENAI API
 OPENAI_API_KEY=your-openai-api-key
+# MLFLOW
 MLFLOW_TRACKING_URI=http://127.0.0.1:5000
 EXPERIMENT_1_NAME=mlflow-agent-1
 EXPERIMENT_2_NAME=mlflow-agent-2
 EXPERIMENT_3_NAME=mlflow-agent-3
 EXPERIMENT_4_NAME=mlflow-agent-4
-
-GEMINI_OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
 ```
 
 # Set up the environment
