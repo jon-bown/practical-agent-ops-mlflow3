@@ -31,8 +31,6 @@ cd practical-agent-ops-mlflow3
 
 2. Set Up `.env`
 ```bash
-
-```bash
 touch .env
 ```
 
